@@ -9,7 +9,8 @@ const os = require("os");
   const program = new Command();
 
   program
-    .option('-f, --force', 'force override link');
+    .option('-f, --force', 'force override link')
+    .option('-t, --timeout <ms>', 'ttl')
     // .option('-n, --name', 'speicfy a custom name for this device');
 
   program.parse();
@@ -43,20 +44,27 @@ const os = require("os");
 
   console.log('Waiting for link. Ctrl+C to cancel');
 
-  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   let linked = false; 
 
-  socket.on('linked', () => {
-    linked = true;
-  });
-
-  for (let i = 0; i < 1000; i++){
-    if (linked)
-      break;
-
-    console.log('hi');
-
-    await delay(1000);
+  try {
+    await new Promise<void>((resolve, reject) => {
+      socket.on('linked', () => {
+        linked = true;
+        resolve();
+      });
+  
+      const timeout = program.opts().timeout;
+  
+      if (timeout) {
+        setTimeout(() => {
+          if (!linked) reject('timeout exceeded');
+        }, timeout);
+      }
+    });
+  } catch (error) {
+    console.clear();
+    console.log(error);
+    return;
   }
 
   console.clear();

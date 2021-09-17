@@ -2,8 +2,6 @@
 
 import { Command } from 'commander';
 import { api, getToken, setToken } from './common';
-import QRCode from 'qrcode';
-const os = require("os");
 
 (async () => {
   const program = new Command();
@@ -16,7 +14,7 @@ const os = require("os");
     throw Error('not linked');
   }
 
-  const payload = { token };
+  const payload = { cliToken: token };
 
   try {
     await api.post('unlink', payload);

@@ -9,8 +9,7 @@ const os = require("os");
   const program = new Command();
 
   program
-    .option('-m, --message', 'foo bar');
-  // TODO: Option to view QR as png
+    .option('-m, --message <content>', 'foo bar');
 
   program.parse();
 
@@ -21,7 +20,7 @@ const os = require("os");
   }
 
   const payload = { 
-    token,
+    cliToken: token,
     message: program.opts().message,
   };
 
