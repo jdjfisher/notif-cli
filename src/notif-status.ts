@@ -1,36 +1,36 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { api, getToken, setToken } from './common';
-import QRCode from 'qrcode';
-const os = require("os");
+import { api, loadConfig, clearConfig } from './common';
 
 (async () => {
   const program = new Command();
 
   program.parse();
 
-  let token = getToken();
+  const config = loadConfig();
 
-  if (!token) {
+  // Check local config first
+  if (!config) {
     console.log('not linked');
     return; 
   }
 
-  const payload = { token };
+  const payload = { cliToken: config.token };
 
   try {
-    // TODO: Validate link with server. If invalid, unset token
-    // const response = await api.get('verify', payload);
+    // Verify with the server
+    const response = await api.post('verify', payload);
 
-    // if () {
-    //   setToken(undefined);
-    //   console.log('not linked');
-    //   return;
-    // }
+    // Forget the token if the server reports no link
+    if (!response?.data?.linked) {
+      clearConfig();
+      console.log('not linked');
+      return;
+    }
 
-    // console.log('this device is linked to ...');
+    console.log('linked to', config.expoDeviceName);
   } catch (error) {
-    // 
+    // TODO: ...
   }
 })();

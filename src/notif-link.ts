@@ -1,44 +1,47 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { api, getToken, openSocket, setToken } from './common';
+import { api, openSocket, loadConfig, clearConfig, setConfig } from './common';
 import QRCode from 'qrcode';
-const os = require("os");
+import os from "os";
 
 (async () => {
   const program = new Command();
 
   program
     .option('-f, --force', 'force override link')
-    .option('-t, --timeout <ms>', 'ttl')
-    // .option('-n, --name', 'speicfy a custom name for this device');
+    .option('-t, --timeout <ms>', 'link timeout')
+    .option('-n, --name <name>', 'speicfy a custom name for this device', os.hostname());
 
   program.parse();
 
-  let token = getToken();
+  const config = loadConfig();
 
-  if (token) {
+  if (config) {
     if (!program.opts().force) 
-      throw Error('already linked. use -f to override');
+      throw Error('already linked. use "-f" to override');
     else 
       // TODO: unlink server-side
-      setToken(undefined);
+      clearConfig();
   }
 
   const response = await api.get('token');
 
-  token = response.data.token;
+  const token = response.data.token;
 
   // TODO: Handle error
   const socket = await openSocket();
 
   const payload = JSON.stringify({
     token: token,
-    name: os.hostname(),
+    name: program.opts().name,
     socketId: socket.id,
   });
   
-  const qr = await QRCode.toString(payload, {type: 'terminal'});
+  const qr = await QRCode.toString(payload, {
+    type: 'terminal',
+    errorCorrectionLevel: 'M',
+  });
 
   console.log(qr);
 
@@ -47,10 +50,11 @@ const os = require("os");
   let linked = false; 
 
   try {
-    await new Promise<void>((resolve, reject) => {
-      socket.on('linked', () => {
+    // TODO: Move this promise somewhere else
+    const expoDeviceName = await new Promise<string>((resolve, reject) => {
+      socket.on('linked', (expoDeviceName: string) => {
         linked = true;
-        resolve();
+        resolve(expoDeviceName);
       });
   
       const timeout = program.opts().timeout;
@@ -61,20 +65,13 @@ const os = require("os");
         }, timeout);
       }
     });
+
+    setConfig({ token, expoDeviceName });
+    console.clear();
+    console.log('device linked to', expoDeviceName);
+
   } catch (error) {
     console.clear();
     console.log(error);
-    return;
   }
-
-  console.clear();
-
-  if (!linked) {
-    console.log('link expired');
-    return;
-  }
-
-  setToken(token);
-  
-  console.log('device linked');
 })();

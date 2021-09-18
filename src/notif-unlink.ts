@@ -1,25 +1,31 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { api, getToken, setToken } from './common';
+import { api, loadConfig, clearConfig } from './common';
 
 (async () => {
   const program = new Command();
 
   program.parse();
 
-  const token = getToken();
+  const config = loadConfig();
 
-  if (!token) {
-    throw Error('not linked');
+  // Check local config first
+  if (!config) {
+    console.log('not linked');
+    return;
   }
 
-  const payload = { cliToken: token };
+  const payload = { cliToken: config.token };
 
   try {
+    // Unlink server-side
     await api.post('unlink', payload);
-    setToken(undefined);
-    console.log('unlinked');
+
+    // Forget local token
+    clearConfig();
+
+    console.log('unlinked from', config.expoDeviceName);
   } catch (error) {
     // TODO: ...
   }

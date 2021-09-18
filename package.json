@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node -r ts-node/register src/notif.ts",
-    "prettier": "prettier --write 'src/**/*.ts'"
+    "prettier": "prettier --write 'src/**/*.ts'",
+    "clean": "rm -rf ~/.notif/settings.json"
   },
   "dependencies": {
     "axios": "^0.21.4",
