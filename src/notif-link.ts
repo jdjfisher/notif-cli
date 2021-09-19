@@ -21,8 +21,7 @@ import os from "os";
     if (!program.opts().force) 
       throw Error('already linked. use "-f" to override');
     else 
-      // TODO: unlink server-side
-      clearConfig();
+      clearConfig(); // TODO: unlink server-side, re-use unlink subcommand
   }
 
   const response = await api.get('token');

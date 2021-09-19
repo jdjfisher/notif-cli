@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
+import axios, { AxiosError } from 'axios';
 import { Command } from 'commander';
-import { api, loadConfig } from './common';
+import { api, loadConfig, clearConfig } from './common';
 
 (async () => {
   const program = new Command();
@@ -24,10 +25,18 @@ import { api, loadConfig } from './common';
     message: program.opts().message,
   };
 
-  try {
-    await api.post('ping', payload);
+  api.post('ping', payload).then(() => {
+
     console.log('ping sent to', config.expoDeviceName);
-  } catch (error) {
-    console.log('failed to send ping');
-  }
+
+  }).catch((error: Error | AxiosError) => {
+
+    if (axios.isAxiosError(error) && error?.response?.status === 409) {
+      console.log('not linked');
+      clearConfig();
+    } else {
+      console.log('failed to send ping');
+    }
+    
+  });
 })();
