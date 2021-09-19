@@ -13,7 +13,7 @@ import { api, loadConfig, clearConfig } from './common';
   // Check local config first
   if (!config) {
     console.log('not linked');
-    return; 
+    return;
   }
 
   const payload = { cliToken: config.token };

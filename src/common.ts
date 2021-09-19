@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 import io, { Socket } from 'socket.io-client';
 import fs from 'fs';
 import path from 'path';
@@ -8,9 +8,9 @@ export const VERSION: string = '0.0.0';
 export const CONFIG_PATH: string = path.join(process.env.HOME ?? '~', '/.notif/settings.json');
 
 export interface Config {
-  token: string, 
-  expoDeviceName: string,
-};
+  token: string;
+  expoDeviceName: string;
+}
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -24,7 +24,7 @@ export const loadConfig = (): Config | null => {
   } catch (error) {
     return null;
   }
-}
+};
 
 export const setConfig = (config: Config): void => {
   if (config) {
@@ -33,11 +33,11 @@ export const setConfig = (config: Config): void => {
   } else {
     fs.unlinkSync(CONFIG_PATH);
   }
-}
+};
 
 export const clearConfig = (): void => {
   fs.unlinkSync(CONFIG_PATH);
-}
+};
 
 export const openSocket = async (timeout: number = 1000): Promise<Socket> => {
   return new Promise((resolve, reject) => {
@@ -50,9 +50,7 @@ export const openSocket = async (timeout: number = 1000): Promise<Socket> => {
     });
 
     setTimeout(() => {
-      if (!connected)
-        reject();
+      if (!connected) reject();
     }, timeout);
   });
-}
-
+};

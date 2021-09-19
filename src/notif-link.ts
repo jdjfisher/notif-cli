@@ -3,7 +3,7 @@
 import { Command } from 'commander';
 import { api, openSocket, loadConfig, clearConfig, setConfig } from './common';
 import QRCode from 'qrcode';
-import os from "os";
+import os from 'os';
 
 (async () => {
   const program = new Command();
@@ -18,10 +18,13 @@ import os from "os";
   const config = loadConfig();
 
   if (config) {
-    if (!program.opts().force) 
-      throw Error('already linked. use "-f" to override');
-    else 
-      clearConfig(); // TODO: unlink server-side, re-use unlink subcommand
+    if (!program.opts().force) {
+      console.log('already linked. use "-f" to override');
+      return;
+    } else {
+      // TODO: unlink server-side, re-use unlink subcommand
+      clearConfig();
+    }
   }
 
   const response = await api.get('token');
@@ -36,7 +39,7 @@ import os from "os";
     name: program.opts().name,
     socketId: socket.id,
   });
-  
+
   const qr = await QRCode.toString(payload, {
     type: 'terminal',
     errorCorrectionLevel: 'M',
@@ -46,7 +49,7 @@ import os from "os";
 
   console.log('Waiting for link. Ctrl+C to cancel');
 
-  let linked = false; 
+  let linked = false;
 
   try {
     // TODO: Move this promise somewhere else
@@ -55,9 +58,9 @@ import os from "os";
         linked = true;
         resolve(expoDeviceName);
       });
-  
+
       const timeout = program.opts().timeout;
-  
+
       if (timeout) {
         setTimeout(() => {
           if (!linked) reject('timeout exceeded');
@@ -68,7 +71,6 @@ import os from "os";
     setConfig({ token, expoDeviceName });
     console.clear();
     console.log('device linked to', expoDeviceName);
-
   } catch (error) {
     console.clear();
     console.log(error);
