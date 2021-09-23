@@ -9,6 +9,7 @@ import os from 'os';
   const program = new Command();
 
   program
+    .option('--no-utf8')
     .option('-f, --force', 'force override link')
     .option('-t, --timeout <ms>', 'link timeout')
     .option('-n, --name <name>', 'speicfy a custom name for this device', os.hostname());
@@ -41,7 +42,7 @@ import os from 'os';
   });
 
   const qr = await QRCode.toString(payload, {
-    type: 'terminal',
+    type: program.opts().utf8 ? 'utf8' : 'terminal',
     errorCorrectionLevel: 'M',
   });
 
