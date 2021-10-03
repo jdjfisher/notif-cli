@@ -12,7 +12,7 @@ import os from 'os';
     .option('--no-utf8')
     .option('-f, --force', 'force override link')
     .option('-t, --timeout <ms>', 'link timeout')
-    .option('-n, --name <name>', 'speicfy a custom name for this device', os.hostname());
+    .option('-n, --name <name>', 'name this device', os.hostname());
 
   program.parse();
 
@@ -28,9 +28,15 @@ import os from 'os';
     }
   }
 
-  const response = await api.get('token');
+  let token: string;
 
-  const token = response.data.token;
+  try {
+    const response = await api.get('token');
+    token = response.data.token;
+  } catch (error) {
+    console.error('failed to connect to server')
+    return;
+  }
 
   // TODO: Handle error
   const socket = await openSocket();
