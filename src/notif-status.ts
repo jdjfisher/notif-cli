@@ -31,6 +31,6 @@ import { api, loadConfig, clearConfig } from './common';
 
     console.log('linked to', config.expoDeviceName);
   } catch (error) {
-    // TODO: ...
+    console.log('failed to connect to server');
   }
 })();

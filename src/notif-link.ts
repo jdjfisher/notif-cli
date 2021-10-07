@@ -20,11 +20,25 @@ import os from 'os';
 
   if (config) {
     if (!program.opts().force) {
+      // TODO: validate link server-side first
+
       console.log('already linked. use "-f" to override');
       return;
+      
     } else {
-      // TODO: unlink server-side, re-use unlink subcommand
-      clearConfig();
+      const payload = { cliToken: config.token };
+
+      try {
+        // Unlink server-side
+        await api.post('unlink', payload);
+
+        // Forget local token
+        clearConfig();
+
+        console.log('unlinked from', config.expoDeviceName);
+      } catch (error) {
+        // 
+      }
     }
   }
 

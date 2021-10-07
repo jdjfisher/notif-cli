@@ -27,6 +27,6 @@ import { api, loadConfig, clearConfig } from './common';
 
     console.log('unlinked from', config.expoDeviceName);
   } catch (error) {
-    // TODO: ...
+    console.log('failed to unlink from ', config.expoDeviceName);
   }
 })();
