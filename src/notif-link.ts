@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import { api, openSocket, loadConfig, clearConfig, setConfig } from './common';
 import QRCode from 'qrcode';
 import os from 'os';
+import { exit } from 'process';
 
 (async () => {
   const program = new Command();
@@ -57,7 +58,7 @@ import os from 'os';
 
   const payload = JSON.stringify({
     token: token,
-    name: program.opts().name,
+    name: program.opts().name.substring(0, 15),
     socketId: socket.id,
   });
 
@@ -92,6 +93,7 @@ import os from 'os';
     setConfig({ token, expoDeviceName });
     console.clear();
     console.log('device linked to', expoDeviceName);
+    exit(0);
   } catch (error) {
     console.clear();
     console.log(error);
