@@ -20,16 +20,21 @@ import { exit } from 'process';
   const config = loadConfig();
 
   if (config) {
-    if (!program.opts().force) {
-      // TODO: validate link server-side first
+    const payload = { cliToken: config.token };
 
-      console.log('already linked. use "-f" to override');
-      return;
-      
-    } else {
-      const payload = { cliToken: config.token };
+    try {
+      if (!program.opts().force) {
+        // Verify with the server
+        const response = await api.post('verify', payload);
 
-      try {
+        // Forget the token if the server reports no link
+        if (!response?.data?.linked) {
+          clearConfig();
+        } else {
+          console.log('already linked. use "-f" to override');
+          return;
+        }
+      } else {
         // Unlink server-side
         await api.post('unlink', payload);
 
@@ -37,9 +42,9 @@ import { exit } from 'process';
         clearConfig();
 
         console.log('unlinked from', config.expoDeviceName);
-      } catch (error) {
-        // 
       }
+    } catch (error) {
+      console.log('failed to connect to server');
     }
   }
 
@@ -49,12 +54,12 @@ import { exit } from 'process';
     const response = await api.get('token');
     token = response.data.token;
   } catch (error) {
-    console.error('failed to connect to server')
+    console.log('failed to connect to server')
     return;
   }
 
-  // TODO: Handle error
   const socket = await openSocket();
+  // TODO: Handle error
 
   const payload = JSON.stringify({
     token: token,

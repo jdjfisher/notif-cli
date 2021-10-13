@@ -8,7 +8,6 @@ import { api, loadConfig, clearConfig } from './common';
   const program = new Command();
 
   program.option('-m, --message <content>', 'specify a message for the push notification');
-  // .option('-d, --delay <ms>', 'add a delay to the ping');
 
   program.parse();
 
