@@ -25,8 +25,8 @@ import { api, loadConfig, clearConfig } from './common';
     // Forget local token
     clearConfig();
 
-    console.log('unlinked from', config.expoDeviceName);
+    console.log('unlinked from', config.mobileDeviceName);
   } catch (error) {
-    console.log('failed to unlink from ', config.expoDeviceName);
+    console.log('failed to unlink from ', config.mobileDeviceName);
   }
 })();

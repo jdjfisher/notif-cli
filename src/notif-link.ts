@@ -5,6 +5,7 @@ import { api, openSocket, loadConfig, clearConfig, setConfig } from './common';
 import QRCode from 'qrcode';
 import os from 'os';
 import { exit } from 'process';
+import { Socket } from 'socket.io-client';
 
 (async () => {
   const program = new Command();
@@ -41,7 +42,7 @@ import { exit } from 'process';
         // Forget local token
         clearConfig();
 
-        console.log('unlinked from', config.expoDeviceName);
+        console.log('unlinked from', config.mobileDeviceName);
       }
     } catch (error) {
       console.log('failed to connect to server');
@@ -49,21 +50,22 @@ import { exit } from 'process';
   }
 
   let token: string;
-
+  let socket: Socket;
+  
   try {
-    const response = await api.get('token');
-    token = response.data.token;
+    const reponse = await api.get<{ token: string }>('token');
+    token = reponse.data.token;
+    socket = await openSocket();
   } catch (error) {
     console.log('failed to connect to server')
     return;
   }
 
-  const socket = await openSocket();
-  // TODO: Handle error
+  const cliDeviceName = program.opts().name.substring(0, 15)
 
   const payload = JSON.stringify({
     token: token,
-    name: program.opts().name.substring(0, 15),
+    name: cliDeviceName,
     socketId: socket.id,
   });
 
@@ -80,10 +82,10 @@ import { exit } from 'process';
 
   try {
     // TODO: Move this promise somewhere else
-    const expoDeviceName = await new Promise<string>((resolve, reject) => {
-      socket.on('linked', (expoDeviceName: string) => {
+    const mobileDeviceName = await new Promise<string>((resolve, reject) => {
+      socket.on('linked', (mobileDeviceName: string) => {
         linked = true;
-        resolve(expoDeviceName);
+        resolve(mobileDeviceName);
       });
 
       const timeout = program.opts().timeout;
@@ -95,9 +97,9 @@ import { exit } from 'process';
       }
     });
 
-    setConfig({ token, expoDeviceName });
+    setConfig({ token, mobileDeviceName, cliDeviceName });
     console.clear();
-    console.log('device linked to', expoDeviceName);
+    console.log('device linked to', mobileDeviceName);
     exit(0);
   } catch (error) {
     console.clear();

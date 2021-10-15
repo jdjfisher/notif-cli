@@ -29,7 +29,7 @@ import { api, loadConfig, clearConfig } from './common';
       return;
     }
 
-    console.log('linked to', config.expoDeviceName);
+    console.log('linked to', config.mobileDeviceName);
   } catch (error) {
     console.log('failed to connect to server');
   }

@@ -20,13 +20,14 @@ import { api, loadConfig, clearConfig } from './common';
 
   const payload = {
     cliToken: config.token,
+    cliDeviceName: config.cliDeviceName,
     message: program.opts().message,
   };
 
   api
     .post('ping', payload)
     .then(() => {
-      console.log('ping sent to', config.expoDeviceName);
+      console.log('ping sent to', config.mobileDeviceName);
     })
     .catch((error: Error | AxiosError) => {
       if (axios.isAxiosError(error) && error?.response?.status === 409) {

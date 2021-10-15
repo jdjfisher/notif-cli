@@ -9,7 +9,8 @@ export const CONFIG_PATH: string = path.join(process.env.HOME ?? '~', '/.notif/s
 
 export interface Config {
   token: string;
-  expoDeviceName: string;
+  cliDeviceName: string;
+  mobileDeviceName: string;
 }
 
 export const api = axios.create({
