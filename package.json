@@ -9,9 +9,10 @@
   "author": "jdjfisher",
   "license": "MIT",
   "scripts": {
-    "dev": "node -r ts-node/register src/notif.ts",
-    "prettier": "prettier --write 'src/**/*.ts'",
+    "localinstall": "npm i -g .",
     "build": "npx tsc",
+    "watch": "npx tsc -w",
+    "prettier": "prettier --write 'src/**/*.ts'",
     "clean": "rm -rf ./dist ~/.notif/settings.json"
   },
   "dependencies": {
