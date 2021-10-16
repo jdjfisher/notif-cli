@@ -26,7 +26,7 @@ import { Socket } from 'socket.io-client';
     try {
       if (!program.opts().force) {
         // Verify with the server
-        const response = await api.post('verify', payload);
+        const response = await api.post('status', payload);
 
         // Forget the token if the server reports no link
         if (!response?.data?.linked) {

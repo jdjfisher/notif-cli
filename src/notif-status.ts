@@ -20,7 +20,7 @@ import { api, loadConfig, clearConfig } from './common';
 
   try {
     // Verify with the server
-    const response = await api.post('verify', payload);
+    const response = await api.post('status', payload);
 
     // Forget the token if the server reports no link
     if (!response?.data?.linked) {
