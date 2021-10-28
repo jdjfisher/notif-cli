@@ -69,19 +69,19 @@ import { Socket } from 'socket.io-client';
     socketId: socket.id,
   });
 
+  // Generate QR link
   const qr = await QRCode.toString(payload, {
     type: program.opts().utf8 ? 'utf8' : 'terminal',
     errorCorrectionLevel: 'M',
   });
 
   console.log(qr);
-
   console.log('Waiting for link. Ctrl+C to cancel');
 
   let linked = false;
 
   try {
-    // TODO: Move this promise somewhere else
+    // Wait for a socket event confirming the link
     const mobileDeviceName = await new Promise<string>((resolve, reject) => {
       socket.on('linked', (mobileDeviceName: string) => {
         linked = true;
@@ -97,6 +97,7 @@ import { Socket } from 'socket.io-client';
       }
     });
 
+    // Persist link data
     setConfig({ token, mobileDeviceName, cliDeviceName });
     console.clear();
     console.log('device linked to', mobileDeviceName);
