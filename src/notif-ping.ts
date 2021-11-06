@@ -25,7 +25,7 @@ import { api, loadConfig, clearConfig } from './common';
   };
 
   api
-    .post('ping', payload)
+    .post('ping', payload, { timeout: 5000 })
     .then(() => {
       console.log('ping sent to', config.mobileDeviceName);
     })
