@@ -3,9 +3,9 @@ import io, { Socket } from 'socket.io-client';
 import fs from 'fs';
 import path from 'path';
 
-export const API_URL: string = 'http://localhost:8000';
-export const VERSION: string = '0.0.0';
-export const CONFIG_PATH: string = path.join(process.env.HOME ?? '~', '/.notif/settings.json');
+export const API_URL: string = process.env.API_URL || 'http://localhost:8000';
+export const VERSION: string = process.env.VERSION || 'unknown';
+export const CONFIG_PATH: string = process.env.CONFIG_PATH || path.join(process.env.HOME || '~', '/.notif/settings.json');
 
 export interface Config {
   token: string;
