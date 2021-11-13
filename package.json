@@ -1,9 +1,9 @@
 {
   "name": "notif-cli",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "./dist/main.js",
   "bin": {
-    "notif": "./dist/main.js"
+    "notif": "dist/main.js"
   },
   "keywords": [],
   "author": "jdjfisher",
