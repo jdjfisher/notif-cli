@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Command } from 'commander';
 import { VERSION } from './common';
 
@@ -10,4 +12,4 @@ program
   .command('unlink', 'unlink this device')
   .command('status', 'get the link status of this device');
 
-  export default program;
+program.parse(process.argv);

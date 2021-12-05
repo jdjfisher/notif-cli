@@ -1,24 +1,29 @@
 {
   "name": "notif-cli",
   "version": "0.1.0",
-  "main": "./dist/main.js",
+  "main": "./dist/notif.js",
   "bin": {
-    "notif": "dist/main.js"
+    "notif": "dist/notif.js"
   },
   "keywords": [],
   "author": "jdjfisher",
   "license": "MIT",
   "scripts": {
+    "start": "node -r ts-node/register -r dotenv/config src/notif.ts",
     "build": "npx tsc",
     "watch": "npx tsc -w",
-    "prettier": "prettier --write 'src/**/*.ts'",
+    "format": "prettier --write 'src/**/*.ts'",
     "clean": "rm -rf ./dist ~/.notif/settings.json",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run test"
   },
+  "files": [
+    "dist/**/*"
+  ],
   "dependencies": {
     "axios": "^0.21.4",
     "commander": "^8.2.0",
-    "dotenv": "^10.0.0",
     "qrcode": "^1.4.4",
     "socket.io-client": "^4.2.0"
   },
@@ -31,6 +36,7 @@
     "@types/qrcode": "^1.4.1",
     "@types/socket.io-client": "^3.0.0",
     "babel-jest": "^27.3.1",
+    "dotenv": "^10.0.0",
     "jest": "^27.3.1",
     "prettier": "^2.2.1",
     "ts-node": "^10.2.1",

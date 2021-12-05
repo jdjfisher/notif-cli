@@ -51,17 +51,17 @@ import { Socket } from 'socket.io-client';
 
   let token: string;
   let socket: Socket;
-  
+
   try {
     const reponse = await api.get<{ token: string }>('token');
     token = reponse.data.token;
     socket = await openSocket();
   } catch (error) {
-    console.log('failed to connect to server')
+    console.log('failed to connect to server');
     return;
   }
 
-  const cliDeviceName = program.opts().name.substring(0, 15)
+  const cliDeviceName = program.opts().name.substring(0, 15);
 
   const payload = JSON.stringify({
     token: token,
