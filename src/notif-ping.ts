@@ -1,16 +1,7 @@
-#!/usr/bin/env node
-
 import axios, { AxiosError } from 'axios';
-import { Command } from 'commander';
 import { api, loadConfig, clearConfig } from './common';
 
-(async () => {
-  const program = new Command();
-
-  program.option('-m, --message <content>', 'specify a message for the push notification');
-
-  program.parse();
-
+export default async (message?: string) => {
   const config = loadConfig();
 
   if (!config) {
@@ -21,7 +12,7 @@ import { api, loadConfig, clearConfig } from './common';
   const payload = {
     cliToken: config.token,
     cliDeviceName: config.cliDeviceName,
-    message: program.opts().message,
+    message,
   };
 
   api
@@ -37,4 +28,4 @@ import { api, loadConfig, clearConfig } from './common';
         console.log('failed to send ping');
       }
     });
-})();
+};

@@ -1,13 +1,6 @@
-#!/usr/bin/env node
-
-import { Command } from 'commander';
 import { api, loadConfig, clearConfig } from './common';
 
-(async () => {
-  const program = new Command();
-
-  program.parse();
-
+export default async () => {
   const config = loadConfig();
 
   // Check local config first
@@ -29,4 +22,4 @@ import { api, loadConfig, clearConfig } from './common';
   } catch (error) {
     console.log('failed to unlink from ', config.mobileDeviceName);
   }
-})();
+};

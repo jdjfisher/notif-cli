@@ -1,6 +1,17 @@
+import cli from '../src/notif';
 
-test('adds 1 + 2 to equal 3', () => {
-  expect(1 + 2).toBe(3);
+describe('...', () => {
+    beforeEach(() => {
+        cli.exitOverride();
+    });
+
+    test('...', () => {
+        const consoleSpy = jest.spyOn(console, 'log');
+    
+        cli.parse(['status'], { from: 'user' });
+    
+        expect(consoleSpy).toHaveBeenCalledWith('not linked');
+    });
 });
 
-import cli from '../src/notif';
+

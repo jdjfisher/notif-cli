@@ -1,30 +1,24 @@
-#!/usr/bin/env node
-
-import { Command } from 'commander';
 import { api, openSocket, loadConfig, clearConfig, setConfig } from './common';
-import QRCode from 'qrcode';
 import os from 'os';
+import QRCode from 'qrcode';
 import { exit } from 'process';
 import { Socket } from 'socket.io-client';
 
-(async () => {
-  const program = new Command();
+type Options = {
+  name?: string, 
+  timeout?: number, 
+  force?: boolean, 
+  utf8?: boolean,
+}
 
-  program
-    .option('--no-utf8')
-    .option('-f, --force', 'force override link')
-    .option('-t, --timeout <ms>', 'link timeout')
-    .option('-n, --name <name>', 'name this device', os.hostname());
-
-  program.parse();
-
+export default async ({ name, timeout, force, utf8 }: Options) => {
   const config = loadConfig();
 
   if (config) {
     const payload = { cliToken: config.token };
 
     try {
-      if (!program.opts().force) {
+      if (!force) {
         // Verify with the server
         const response = await api.post('status', payload);
 
@@ -61,7 +55,7 @@ import { Socket } from 'socket.io-client';
     return;
   }
 
-  const cliDeviceName = program.opts().name.substring(0, 15);
+  const cliDeviceName = (name ?? os.hostname()).substring(0, 15);
 
   const payload = JSON.stringify({
     token: token,
@@ -71,7 +65,7 @@ import { Socket } from 'socket.io-client';
 
   // Generate QR link
   const qr = await QRCode.toString(payload, {
-    type: program.opts().utf8 ? 'utf8' : 'terminal',
+    type: utf8 ? 'utf8' : 'terminal',
     errorCorrectionLevel: 'M',
   });
 
@@ -88,8 +82,6 @@ import { Socket } from 'socket.io-client';
         resolve(mobileDeviceName);
       });
 
-      const timeout = program.opts().timeout;
-
       if (timeout) {
         setTimeout(() => {
           if (!linked) reject('timeout exceeded');
@@ -101,9 +93,10 @@ import { Socket } from 'socket.io-client';
     setConfig({ token, mobileDeviceName, cliDeviceName });
     console.clear();
     console.log('device linked to', mobileDeviceName);
-    exit(0);
   } catch (error) {
     console.clear();
     console.log(error);
-  }
-})();
+  } 
+
+  exit(0);
+};
