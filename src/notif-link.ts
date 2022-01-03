@@ -20,7 +20,7 @@ export default async ({ name, timeout, force, utf8 }: Options) => {
     try {
       if (!force) {
         // Verify with the server
-        const response = await api.post('status', payload);
+        const response = await api.post('/status', payload);
 
         // Forget the token if the server reports no link
         if (!response?.data?.linked) {
@@ -31,7 +31,7 @@ export default async ({ name, timeout, force, utf8 }: Options) => {
         }
       } else {
         // Unlink server-side
-        await api.post('unlink', payload);
+        await api.post('/unlink', payload);
 
         // Forget local token
         clearConfig();

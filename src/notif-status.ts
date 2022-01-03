@@ -14,7 +14,7 @@ export default async () => {
 
   try {
     // Verify with the server
-    const response = await api.post('status', payload);
+    const response = await api.post('/status', payload);
 
     // Forget the token if the server reports no link
     if (!response?.data?.linked) {
