@@ -13,7 +13,7 @@ export default async () => {
 
   try {
     // Unlink server-side
-    await api.post('unlink', payload);
+    await api.post('/unlink', payload);
 
     // Forget local token
     clearConfig();
