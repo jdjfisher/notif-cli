@@ -3,7 +3,7 @@ import io, { Socket } from 'socket.io-client';
 import fs from 'fs';
 import path from 'path';
 
-export const API_URL: string = process.env.API_URL || 'http://api.notif.jdjfisher.dev:8000';
+export const API_URL: string = process.env.API_URL || 'https://api.notif.jdjfisher.dev';
 export const CONFIG_PATH: string = process.env.CONFIG_PATH || path.join(process.env.HOME || '~', '/.notif/settings.json');
 
 export interface Config {
