@@ -40,6 +40,7 @@ export default async ({ name, timeout, force, utf8 }: Options) => {
       }
     } catch (error) {
       console.log('failed to connect to server');
+      return;
     }
   }
 
