@@ -8,12 +8,13 @@ export const CONFIG_PATH: string = process.env.CONFIG_PATH || path.join(process.
 
 export interface Config {
   token: string;
+  customServerUrl?: string,
   cliDeviceName: string;
   mobileDeviceName: string;
 }
 
-export const api = axios.create({
-  baseURL: API_URL,
+export const createApiClient = (url?: string) => axios.create({
+  baseURL: url || API_URL,
   timeout: 1000,
 });
 
@@ -39,9 +40,9 @@ export const clearConfig = (): void => {
   fs.unlinkSync(CONFIG_PATH);
 };
 
-export const openSocket = async (timeout: number = 1000): Promise<Socket> => {
+export const openSocket = async (url?: string, timeout: number = 1000): Promise<Socket> => {
   return new Promise((resolve, reject) => {
-    const socket = io(API_URL);
+    const socket = io(url || API_URL);
     let connected = false;
 
     socket.on('connect', () => {

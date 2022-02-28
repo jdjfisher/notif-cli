@@ -1,13 +1,15 @@
-import axios, { AxiosError } from 'axios';
-import { api, loadConfig, clearConfig } from './common';
+import axios from 'axios';
+import { createApiClient, loadConfig, clearConfig } from './lib';
 
 export default async (message?: string) => {
   const config = loadConfig();
-
+  
   if (!config) {
     console.log('not linked');
     return;
   }
+
+  const api = createApiClient(config.customServerUrl);
 
   const payload = {
     cliToken: config.token,

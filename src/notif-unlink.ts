@@ -1,4 +1,4 @@
-import { api, loadConfig, clearConfig } from './common';
+import { loadConfig, clearConfig, createApiClient } from './lib';
 
 export default async () => {
   const config = loadConfig();
@@ -8,6 +8,8 @@ export default async () => {
     console.log('not linked');
     return;
   }
+
+  const api = createApiClient(config.customServerUrl);
 
   const payload = { cliToken: config.token };
 

@@ -1,20 +1,24 @@
-import { api, openSocket, loadConfig, clearConfig, setConfig } from './common';
+import { openSocket, loadConfig, clearConfig, setConfig, createApiClient } from './lib';
 import os from 'os';
 import QRCode from 'qrcode';
 import { exit } from 'process';
 import { Socket } from 'socket.io-client';
 
 type Options = {
-  name?: string, 
-  timeout?: number, 
-  force?: boolean, 
-  utf8?: boolean,
-}
+  name?: string;
+  timeout?: number;
+  server?: string;
+  force?: boolean;
+  utf8?: boolean;
+};
 
-export default async ({ name, timeout, force, utf8 }: Options) => {
+export default async ({ name, timeout, force, utf8, server: customServerUrl }: Options) => {
   const config = loadConfig();
 
+  //
   if (config) {
+    const api = createApiClient(config.customServerUrl);
+
     const payload = { cliToken: config.token };
 
     try {
@@ -44,13 +48,25 @@ export default async ({ name, timeout, force, utf8 }: Options) => {
     }
   }
 
+  const api = createApiClient(customServerUrl);
+
+  // Check thing
+  if (customServerUrl) {
+    try {
+      await api.get('health');
+    } catch (error) {
+      console.log('failed to connect to server');
+      return;
+    }
+  }
+
   let token: string;
   let socket: Socket;
 
   try {
     const reponse = await api.get<{ token: string }>('token');
     token = reponse.data.token;
-    socket = await openSocket();
+    socket = await openSocket(customServerUrl);
   } catch (error) {
     console.log('failed to connect to server');
     return;
@@ -91,13 +107,13 @@ export default async ({ name, timeout, force, utf8 }: Options) => {
     });
 
     // Persist link data
-    setConfig({ token, mobileDeviceName, cliDeviceName });
+    setConfig({ token, mobileDeviceName, cliDeviceName, customServerUrl });
     console.clear();
     console.log('device linked to', mobileDeviceName);
   } catch (error) {
     console.clear();
     console.log(error);
-  } 
+  }
 
   exit(0);
 };

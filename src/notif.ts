@@ -16,6 +16,7 @@ program
   .option('--no-utf8')
   .option('-f, --force', 'force override link')
   .option('-t, --timeout <ms>', 'link timeout')
+  .option('-s, --server <url>', 'custom server')
   .option('-n, --name <name>', 'name this device')
   .action((options) => link(options));
 
