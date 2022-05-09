@@ -12,7 +12,7 @@
     "start": "node -r ts-node/register -r dotenv/config src/notif.ts",
     "build": "tsc",
     "watch": "tsc -w",
-    "format": "prettier --write 'src/**/*.ts'",
+    "format": "prettier --write .",
     "clean": "rm -rf ./dist ~/.notif/settings.json",
     "check": "tsc --noEmit",
     "test": "tsc && jest",
