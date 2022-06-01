@@ -4,10 +4,9 @@ import ping from './notif-ping';
 import unlink from './notif-unlink';
 import status from './notif-status';
 
-
 const program = new Command();
 
-const manifest = require("dummy_for_node_modules/../../package.json");
+const manifest = require('dummy_for_node_modules/../../package.json');
 program.version(manifest.version);
 
 program
@@ -26,14 +25,8 @@ program
   .description('send a push notification to linked mobile device')
   .action((message) => ping(message));
 
-program
-  .command('unlink')
-  .description('unlink this device')
-  .action(unlink);
+program.command('unlink').description('unlink this device').action(unlink);
 
-program
-  .command('status')
-  .description('get the link status of this device')
-  .action(status);
+program.command('status').description('get the link status of this device').action(status);
 
 export default program;

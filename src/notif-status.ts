@@ -1,4 +1,3 @@
-
 import { loadConfig, clearConfig, createApiClient } from './lib';
 
 export default async () => {
@@ -29,4 +28,4 @@ export default async () => {
   } catch (error) {
     console.log('failed to connect to server');
   }
-}
+};

@@ -4,19 +4,21 @@ import fs from 'fs';
 import path from 'path';
 
 export const API_URL: string = process.env.API_URL || 'https://api.notif.jdjfisher.dev';
-export const CONFIG_PATH: string = process.env.CONFIG_PATH || path.join(process.env.HOME || '~', '/.notif/settings.json');
+export const CONFIG_PATH: string =
+  process.env.CONFIG_PATH || path.join(process.env.HOME || '~', '/.notif/settings.json');
 
 export interface Config {
   token: string;
-  customServerUrl?: string,
+  customServerUrl?: string;
   cliDeviceName: string;
   mobileDeviceName: string;
 }
 
-export const createApiClient = (url?: string) => axios.create({
-  baseURL: url || API_URL,
-  timeout: 1000,
-});
+export const createApiClient = (url?: string) =>
+  axios.create({
+    baseURL: url || API_URL,
+    timeout: 1000,
+  });
 
 export const loadConfig = (): Config | null => {
   try {
