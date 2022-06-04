@@ -42,7 +42,7 @@ export const clearConfig = (): void => {
   fs.unlinkSync(CONFIG_PATH);
 };
 
-export const openSocket = async (url?: string, timeout: number = 1000): Promise<Socket> => {
+export const openSocket = async (url?: string, timeout = 1000): Promise<Socket> => {
   return new Promise((resolve, reject) => {
     const socket = io(url || API_URL);
     let connected = false;
