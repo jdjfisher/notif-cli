@@ -17,7 +17,7 @@
     "typecheck": "tsc --noEmit",
     "test": "tsc && jest",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run test"
+    "prepublishOnly": "npm test"
   },
   "files": [
     "dist/src/**/*"
