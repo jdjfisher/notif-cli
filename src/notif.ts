@@ -6,6 +6,7 @@ import status from './notif-status';
 
 const program = new Command();
 
+// eslint-disable-next-line
 const manifest = require('dummy_for_node_modules/../../package.json');
 program.version(manifest.version);
 

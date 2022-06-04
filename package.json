@@ -15,7 +15,7 @@
     "format": "prettier --write .",
     "clean": "rm -rf ./dist ~/.notif/settings.json",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --ignore-path .gitignore",
+    "lint": "eslint . --ext .ts --ignore-path .gitignore",
     "test": "tsc && jest",
     "prepare": "npm run build",
     "prepublishOnly": "npm test"
