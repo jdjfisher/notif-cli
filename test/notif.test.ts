@@ -5,7 +5,7 @@ describe('...', () => {
     cli.exitOverride();
   });
 
-  test('...', () => {
+  test.skip('...', () => {
     const consoleSpy = jest.spyOn(console, 'log');
 
     cli.parse(['status'], { from: 'user' });
