@@ -1,13 +1,15 @@
 {
   "name": "notif-cli",
   "version": "0.1.3",
+  "description": "",
+  "keywords": [],
+  "homepage": "https://github.com/jdjfisher/notif-cli#readme",
+  "license": "MIT",
+  "author": "jdjfisher",
   "main": "./dist/notif.js",
   "bin": {
     "notif": "dist/src/main.js"
   },
-  "keywords": [],
-  "author": "jdjfisher",
-  "license": "MIT",
   "scripts": {
     "start": "node -r ts-node/register -r dotenv/config src/notif.ts",
     "build": "tsc",
