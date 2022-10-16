@@ -6,7 +6,7 @@
   "homepage": "https://github.com/jdjfisher/notif-cli#readme",
   "license": "MIT",
   "author": "jdjfisher",
-  "main": "./dist/notif.js",
+  "main": "./dist/src/notif.js",
   "bin": {
     "notif": "dist/src/main.js"
   },
