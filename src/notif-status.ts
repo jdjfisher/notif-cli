@@ -11,14 +11,14 @@ export default async () => {
 
   const api = createApiClient(config.customServerUrl);
 
-  const payload = { cliToken: config.token };
+  const payload = { token: config.token };
 
   try {
     // Verify with the server
-    const response = await api.post('/status', payload);
+    const response = await api.post('/client/status', payload);
 
     // Forget the token if the server reports no link
-    if (!response?.data?.linked) {
+    if (!response.data?.linked) {
       clearConfig();
       console.log('not linked');
       return;

@@ -11,11 +11,11 @@ export default async () => {
 
   const api = createApiClient(config.customServerUrl);
 
-  const payload = { cliToken: config.token };
+  const payload = { token: config.token };
 
   try {
     // Unlink server-side
-    await api.post('/unlink', payload);
+    await api.post('/client/unlink', payload);
 
     // Forget local token
     clearConfig();

@@ -19,15 +19,15 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
   if (config) {
     const api = createApiClient(config.customServerUrl);
 
-    const payload = { cliToken: config.token };
+    const payload = { token: config.token };
 
     try {
       if (!force) {
         // Verify with the server
-        const response = await api.post('/status', payload);
+        const response = await api.post('/client/status', payload);
 
         // Forget the token if the server reports no link
-        if (!response?.data?.linked) {
+        if (!response.data?.linked) {
           clearConfig();
         } else {
           console.log('already linked. use "-f" to override');
@@ -35,7 +35,7 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
         }
       } else {
         // Unlink server-side
-        await api.post('/unlink', payload);
+        await api.post('/client/unlink', payload);
 
         // Forget local token
         clearConfig();
@@ -60,12 +60,14 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
     }
   }
 
-  let token: string;
+  let clientToken: string;
+  let linkCode: string;
   let socket: Socket;
 
   try {
-    const reponse = await api.get<{ token: string }>('token');
-    token = reponse.data.token;
+    const response = await api.get('/client/token');
+    clientToken = response.data.client_token;
+    linkCode = response.data.link_code;
     socket = await openSocket(customServerUrl);
   } catch (error) {
     console.log('failed to connect to server');
@@ -75,9 +77,9 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
   const cliDeviceName = (name ?? os.hostname()).substring(0, 15);
 
   const payload = JSON.stringify({
-    token: token,
     name: cliDeviceName,
-    socketId: socket.id,
+    code: linkCode,
+    socket: socket.id,
   });
 
   // Generate QR link
@@ -107,7 +109,7 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
     });
 
     // Persist link data
-    setConfig({ token, mobileDeviceName, cliDeviceName, customServerUrl });
+    setConfig({ token: clientToken, mobileDeviceName, cliDeviceName, customServerUrl });
     console.clear();
     console.log('device linked to', mobileDeviceName);
   } catch (error) {

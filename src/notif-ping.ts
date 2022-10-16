@@ -12,13 +12,13 @@ export default async (message?: string) => {
   const api = createApiClient(config.customServerUrl);
 
   const payload = {
-    cliToken: config.token,
-    cliDeviceName: config.cliDeviceName,
+    token: config.token,
+    device_name: config.cliDeviceName,
     message,
   };
 
   try {
-    await api.post('/ping', payload, { timeout: 5000 });
+    await api.post('/client/ping', payload, { timeout: 5000 });
 
     console.log('ping sent to', config.mobileDeviceName);
   } catch (error) {
