@@ -10,10 +10,9 @@ export default async (message?: string) => {
     return;
   }
 
-  const api = createApiClient(config.customServerUrl);
+  const api = createApiClient(config);
 
   const payload = {
-    token: config.token,
     device_name: config.cliDeviceName,
     message,
   };

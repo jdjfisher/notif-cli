@@ -5,7 +5,7 @@ import path from 'path';
 export const CONFIG_PATH: string =
   process.env.CONFIG_PATH || path.join(os.homedir(), '/.notif/settings.json');
 
-export interface Config {
+interface Config {
   token: string;
   customServerUrl?: string;
   cliDeviceName: string;

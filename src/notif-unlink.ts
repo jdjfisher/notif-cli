@@ -10,19 +10,17 @@ export default async () => {
     return;
   }
 
-  const api = createApiClient(config.customServerUrl);
-
-  const payload = { token: config.token };
+  const api = createApiClient(config);
 
   try {
     // Unlink server-side
-    await api.post('/client/unlink', payload);
+    await api.post('/client/unlink');
 
     // Forget local token
     clearConfig();
 
     console.log('unlinked from', config.mobileDeviceName);
   } catch (error) {
-    console.log('failed to unlink from ', config.mobileDeviceName);
+    console.log('failed to unlink from', config.mobileDeviceName);
   }
 };

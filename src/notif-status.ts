@@ -1,5 +1,6 @@
 import { loadConfig, clearConfig } from './lib/config';
 import { createApiClient } from './lib/api';
+import axios from 'axios';
 
 export default async () => {
   const config = loadConfig();
@@ -10,23 +11,20 @@ export default async () => {
     return;
   }
 
-  const api = createApiClient(config.customServerUrl);
-
-  const payload = { token: config.token };
+  const api = createApiClient(config);
 
   try {
     // Verify with the server
-    const response = await api.post('/client/status', payload);
+    await api.post('/client/status');
 
-    // Forget the token if the server reports no link
-    if (!response.data?.linked) {
+    console.log('linked to', config.mobileDeviceName);
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
       clearConfig();
       console.log('not linked');
       return;
     }
 
-    console.log('linked to', config.mobileDeviceName);
-  } catch (error) {
     console.log('failed to connect to server');
   }
 };

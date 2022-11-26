@@ -18,14 +18,12 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
 
   //
   if (config) {
-    const api = createApiClient(config.customServerUrl);
-
-    const payload = { token: config.token };
+    const api = createApiClient(config);
 
     try {
       if (!force) {
         // Verify with the server
-        const response = await api.post('/client/status', payload);
+        const response = await api.post('/client/status');
 
         // Forget the token if the server reports no link
         if (!response.data?.linked) {
@@ -36,7 +34,7 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
         }
       } else {
         // Unlink server-side
-        await api.post('/client/unlink', payload);
+        await api.post('/client/unlink');
 
         // Forget local token
         clearConfig();
@@ -49,7 +47,7 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
     }
   }
 
-  const api = createApiClient(customServerUrl);
+  const api = createApiClient({ customServerUrl });
 
   // Check thing
   if (customServerUrl) {
