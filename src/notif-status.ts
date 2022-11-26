@@ -2,7 +2,11 @@ import { loadConfig, clearConfig } from './lib/config';
 import { createApiClient } from './lib/api';
 import axios from 'axios';
 
-export default async () => {
+type Options = {
+  verbose?: boolean;
+};
+
+export default async ({ verbose }: Options) => {
   const config = loadConfig();
 
   // Check local config first
@@ -18,6 +22,10 @@ export default async () => {
     await api.post('/client/status');
 
     console.log('linked to', config.mobileDeviceName);
+
+    if (verbose) {
+      console.log(config);
+    }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
       clearConfig();

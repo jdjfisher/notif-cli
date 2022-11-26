@@ -26,8 +26,12 @@ program
   .description('send a push notification to linked mobile device')
   .action((message) => ping(message));
 
-program.command('unlink').description('unlink this device').action(unlink);
+program
+  .command('status')
+  .description('get the link status of this device')
+  .option('-v, --verbose')
+  .action(status);
 
-program.command('status').description('get the link status of this device').action(status);
+program.command('unlink').description('unlink this device').action(unlink);
 
 export default program;
