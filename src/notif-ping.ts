@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { createApiClient, loadConfig, clearConfig } from './lib';
+import { loadConfig, clearConfig } from './lib/config';
+import { createApiClient } from './lib/api';
 
 export default async (message?: string) => {
   const config = loadConfig();

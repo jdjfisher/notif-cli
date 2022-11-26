@@ -1,4 +1,5 @@
-import { openSocket, loadConfig, clearConfig, setConfig, createApiClient } from './lib';
+import { loadConfig, clearConfig, setConfig } from './lib/config';
+import { openSocket, createApiClient } from './lib/api';
 import os from 'os';
 import QRCode from 'qrcode';
 import { exit } from 'process';

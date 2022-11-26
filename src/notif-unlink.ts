@@ -1,4 +1,5 @@
-import { loadConfig, clearConfig, createApiClient } from './lib';
+import { loadConfig, clearConfig } from './lib/config';
+import { createApiClient } from './lib/api';
 
 export default async () => {
   const config = loadConfig();
