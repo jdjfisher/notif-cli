@@ -19,7 +19,7 @@ export default async ({ verbose }: Options) => {
 
   try {
     // Verify with the server
-    await api.post('/client/status');
+    await api.get('/client/status');
 
     console.log('linked to', config.mobileDeviceName);
 

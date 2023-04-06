@@ -1,7 +1,7 @@
 import axios from 'axios';
 import io, { Socket } from 'socket.io-client';
 
-export const API_URL: string = process.env.API_URL || 'https://api.notif.jdjfisher.dev';
+export const API_URL: string = process.env.API_URL || 'https://notif.jdjfisher.dev';
 
 export const createApiClient = ({
   customServerUrl,
@@ -11,7 +11,7 @@ export const createApiClient = ({
   token?: string;
 }) =>
   axios.create({
-    baseURL: customServerUrl || API_URL,
+    baseURL: `${customServerUrl || API_URL}/api`,
     headers: {
       common: {
         Authorization: token ? `Bearer ${token}` : undefined,

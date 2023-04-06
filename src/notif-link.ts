@@ -23,7 +23,7 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
     try {
       if (!force) {
         // Verify with the server
-        const response = await api.post('/client/status');
+        const response = await api.get('/client/status');
 
         // Forget the token if the server reports no link
         if (!response.data?.linked) {
