@@ -1,12 +1,13 @@
 import cli from '../src/notif';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 
 describe('...', () => {
   beforeEach(() => {
     cli.exitOverride();
   });
 
-  test.skip('...', () => {
-    const consoleSpy = jest.spyOn(console, 'log');
+  test('...', () => {
+    const consoleSpy = vi.spyOn(console, 'log');
 
     cli.parse(['status'], { from: 'user' });
 
