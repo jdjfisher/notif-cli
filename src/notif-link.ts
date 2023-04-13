@@ -1,9 +1,9 @@
 import { loadConfig, clearConfig, setConfig } from './lib/config';
-import { openSocket, createApiClient } from './lib/api';
+import { createApiClient } from './lib/api';
 import os from 'os';
 import QRCode from 'qrcode';
 import { exit } from 'process';
-import { Socket } from 'socket.io-client';
+import Pusher from 'pusher-js';
 
 type Options = {
   name?: string;
@@ -61,24 +61,25 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
 
   let clientToken: string;
   let linkCode: string;
-  let socket: Socket;
+  let pusherKey: string;
 
   try {
     const response = await api.get('/client/token');
     clientToken = response.data.client_token;
     linkCode = response.data.link_code;
-    socket = await openSocket(customServerUrl);
+    pusherKey = response.data.pusher_key;
   } catch (error) {
     console.log('failed to connect to server');
     return;
   }
+
+  const pusher = new Pusher(pusherKey, { cluster: 'eu' });
 
   const cliDeviceName = (name ?? os.hostname()).substring(0, 15);
 
   const payload = JSON.stringify({
     name: cliDeviceName,
     code: linkCode,
-    socket: socket.id,
   });
 
   // Generate QR link
@@ -95,7 +96,7 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
   try {
     // Wait for a socket event confirming the link
     const mobileDeviceName = await new Promise<string>((resolve, reject) => {
-      socket.on('linked', (mobileDeviceName: string) => {
+      pusher.subscribe(linkCode).bind('linked', (mobileDeviceName: string) => {
         linked = true;
         resolve(mobileDeviceName);
       });
