@@ -4,6 +4,7 @@ import os from 'os';
 import QRCode from 'qrcode';
 import { exit } from 'process';
 import Pusher from 'pusher-js';
+import axios from 'axios';
 
 type Options = {
   name?: string;
@@ -20,30 +21,30 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
   if (config) {
     const api = createApiClient(config);
 
-    try {
-      if (!force) {
-        // Verify with the server
-        const response = await api.get('/client/status');
+    if (!force) {
+      // Verify with the server
+      try {
+        await api.get('/client/status');
 
-        // Forget the token if the server reports no link
-        if (!response.data?.linked) {
-          clearConfig();
-        } else {
-          console.log('already linked. use "-f" to override');
+        console.log('already linked. use "-f" to override');
+        return;
+      } catch (error) {
+        if (!axios.isAxiosError(error) || error.response?.status !== 401) {
+          console.log('failed to connect to server');
           return;
         }
-      } else {
-        // Unlink server-side
-        await api.post('/client/unlink');
 
-        // Forget local token
+        // Forget the token if the server reports no link
         clearConfig();
-
-        console.log('unlinked from', config.mobileDeviceName);
       }
-    } catch (error) {
-      console.log('failed to connect to server');
-      return;
+    } else {
+      // Unlink server-side
+      await api.post('/client/unlink');
+
+      // Forget local token
+      clearConfig();
+
+      console.log('unlinked from', config.mobileDeviceName);
     }
   }
 
