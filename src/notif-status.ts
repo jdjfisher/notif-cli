@@ -2,9 +2,9 @@ import { loadConfig, clearConfig } from './lib/config';
 import { createApiClient } from './lib/api';
 import axios from 'axios';
 
-type Options = {
+interface Options {
   verbose?: boolean;
-};
+}
 
 export default async ({ verbose }: Options) => {
   const config = loadConfig();

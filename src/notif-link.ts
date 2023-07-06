@@ -6,81 +6,43 @@ import { exit } from 'process';
 import Pusher from 'pusher-js';
 import axios from 'axios';
 
-type Options = {
+interface Options {
   name?: string;
   timeout?: number;
   server?: string;
   force?: boolean;
   utf8?: boolean;
-};
+}
 
-export default async ({ name, timeout, force, utf8, server: customServerUrl }: Options) => {
-  const config = loadConfig();
+interface TokenResponse {
+  client_token: string;
+  link_code: string;
+  pusher_key: string;
+}
 
-  //
-  if (config) {
-    const api = createApiClient(config);
+export default async ({
+  name,
+  timeout,
+  force,
+  utf8,
+  server: customServerUrl,
+}: Options) => {
+  const existingLink = await checkForExistingLink(force);
 
-    if (!force) {
-      // Verify with the server
-      try {
-        await api.get('/client/status');
-
-        console.log('already linked. use "-f" to override');
-        return;
-      } catch (error) {
-        if (!axios.isAxiosError(error) || error.response?.status !== 401) {
-          console.log('failed to connect to server');
-          return;
-        }
-
-        // Forget the token if the server reports no link
-        clearConfig();
-      }
-    } else {
-      // Unlink server-side
-      await api.post('/client/unlink');
-
-      // Forget local token
-      clearConfig();
-
-      console.log('unlinked from', config.mobileDeviceName);
-    }
-  }
-
-  const api = createApiClient({ customServerUrl });
-
-  // Check thing
-  if (customServerUrl) {
-    try {
-      await api.get('health');
-    } catch (error) {
-      console.log('failed to connect to server');
-      return;
-    }
-  }
-
-  let clientToken: string;
-  let linkCode: string;
-  let pusherKey: string;
-
-  try {
-    const response = await api.get('/client/token');
-    clientToken = response.data.client_token;
-    linkCode = response.data.link_code;
-    pusherKey = response.data.pusher_key;
-  } catch (error) {
-    console.log('failed to connect to server');
+  if (existingLink) {
+    console.log('already linked. use "-f" to override');
     return;
   }
 
-  const pusher = new Pusher(pusherKey, { cluster: 'eu' });
+  const { client_token, link_code, pusher_key } = await generateToken(
+    customServerUrl
+  );
 
   const cliDeviceName = (name ?? os.hostname()).substring(0, 15);
 
   const payload = JSON.stringify({
     name: cliDeviceName,
-    code: linkCode,
+    code: link_code,
   });
 
   // Generate QR link
@@ -92,31 +54,86 @@ export default async ({ name, timeout, force, utf8, server: customServerUrl }: O
   console.log(qr);
   console.log('Waiting for link. Ctrl+C to cancel');
 
-  let linked = false;
+  const mobileDeviceName = await waitForLink(pusher_key, link_code, timeout);
 
-  try {
-    // Wait for a socket event confirming the link
-    const mobileDeviceName = await new Promise<string>((resolve, reject) => {
-      pusher.subscribe(linkCode).bind('linked', (mobileDeviceName: string) => {
-        linked = true;
-        resolve(mobileDeviceName);
-      });
+  setConfig({
+    token: client_token,
+    mobileDeviceName,
+    cliDeviceName,
+    customServerUrl,
+  });
 
-      if (timeout) {
-        setTimeout(() => {
-          if (!linked) reject('timeout exceeded');
-        }, timeout);
-      }
-    });
-
-    // Persist link data
-    setConfig({ token: clientToken, mobileDeviceName, cliDeviceName, customServerUrl });
-    console.clear();
-    console.log('device linked to', mobileDeviceName);
-  } catch (error) {
-    console.clear();
-    console.log(error);
-  }
+  console.clear();
+  console.log('device linked to', mobileDeviceName);
 
   exit(0);
 };
+
+async function checkForExistingLink(force = false): Promise<boolean> {
+  const config = loadConfig();
+
+  if (!config) {
+    return false;
+  }
+
+  const api = createApiClient(config);
+
+  if (!force) {
+    try {
+      // Check with the server
+      await api.get('/client/status');
+
+      return true;
+    } catch (error) {
+      // We can't be sure if the server is down or if the token is invalid
+      if (!axios.isAxiosError(error) || error.response?.status !== 401) {
+        throw error;
+      }
+    }
+  } else {
+    // Unlink server-side
+    await api.post('/client/unlink');
+  }
+
+  // Clear local token
+  clearConfig();
+  console.log('unlinked from', config.mobileDeviceName);
+
+  return false;
+}
+
+async function generateToken(customServerUrl?: string): Promise<TokenResponse> {
+  const api = createApiClient({ customServerUrl });
+
+  const response = await api.get('/client/token');
+
+  return response.data;
+}
+
+async function waitForLink(
+  pusherKey: string,
+  linkCode: string,
+  timeout?: number
+): Promise<string> {
+  const pusher = new Pusher(pusherKey, { cluster: 'eu' });
+
+  let linked = false;
+
+  // Wait for a socket event confirming the link
+  return await new Promise<string>((resolve, reject) => {
+    pusher.subscribe(linkCode).bind('linked', (mobileDeviceName: string) => {
+      linked = true;
+      resolve(mobileDeviceName);
+    });
+
+    if (timeout) {
+      setTimeout(() => {
+        if (!linked) {
+          console.clear();
+          console.log('timeout exceeded.');
+          exit(0);
+        }
+      }, timeout);
+    }
+  });
+}
