@@ -8,7 +8,14 @@ const program = new Command();
 
 // eslint-disable-next-line
 const manifest = require('dummy_for_node_modules/../../package.json');
-program.version(manifest.version);
+
+program
+  .version(manifest.version)
+  .showHelpAfterError()
+  .option('-v, --verbose', 'output extra debugging')
+  .on('option:verbose', function () {
+    process.env.VERBOSE = program.opts().verbose;
+  });
 
 program
   .command('link')
