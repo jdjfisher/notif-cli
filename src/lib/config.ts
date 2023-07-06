@@ -24,7 +24,10 @@ export const loadConfig = (): Config | null => {
 export const setConfig = (config: Config): void => {
   if (config) {
     fs.mkdirSync(path.dirname(CONFIG_PATH), { recursive: true });
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config), { encoding: 'utf8', flag: 'w' });
+    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config), {
+      encoding: 'utf8',
+      flag: 'w',
+    });
   } else {
     fs.unlinkSync(CONFIG_PATH);
   }
