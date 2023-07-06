@@ -16,5 +16,5 @@ export const createApiClient = ({
         Authorization: token ? `Bearer ${token}` : undefined,
       },
     },
-    timeout: 1000,
+    timeout: 5000,
   });
